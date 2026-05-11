@@ -839,4 +839,37 @@ describe("resolveDeviceScaleFactor", () => {
       }),
     ).toThrow(/aspect ratio|non-integer/);
   });
+
+  it("returns 1 for a square comp matching the square preset", () => {
+    expect(
+      resolveDeviceScaleFactor({
+        ...defaults,
+        compositionWidth: 1080,
+        compositionHeight: 1080,
+        outputResolution: "square",
+      }),
+    ).toBe(1);
+  });
+
+  it("returns 2 for square 1080 → square-4k", () => {
+    expect(
+      resolveDeviceScaleFactor({
+        ...defaults,
+        compositionWidth: 1080,
+        compositionHeight: 1080,
+        outputResolution: "square-4k",
+      }),
+    ).toBe(2);
+  });
+
+  it("rejects landscape preset on a square composition", () => {
+    expect(() =>
+      resolveDeviceScaleFactor({
+        ...defaults,
+        compositionWidth: 1080,
+        compositionHeight: 1080,
+        outputResolution: "landscape",
+      }),
+    ).toThrow(/aspect ratio/);
+  });
 });

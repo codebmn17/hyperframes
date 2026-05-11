@@ -275,10 +275,7 @@ describe("parseHtml", () => {
     expect(result.resolution).toBe("landscape");
   });
 
-  it("classifies square compositions as portrait by convention", () => {
-    // 1080×1080 has no obvious orientation. The parser collapses the tie to
-    // portrait — same bias the prior `w > h ? landscape : portrait` ternary
-    // had. Pinning so a future refactor doesn't silently flip it.
+  it("infers square resolution from equal width/height", () => {
     const html = `
       <html data-composition-width="1080" data-composition-height="1080">
       <body>
@@ -290,7 +287,22 @@ describe("parseHtml", () => {
     `;
     const result = parseHtml(html);
 
-    expect(result.resolution).toBe("portrait");
+    expect(result.resolution).toBe("square");
+  });
+
+  it("infers square-4k from equal width/height ≥ 2160", () => {
+    const html = `
+      <html data-composition-width="2160" data-composition-height="2160">
+      <body>
+        <div id="stage">
+          <div id="text1" data-start="0" data-end="5"><div>Hello</div></div>
+        </div>
+      </body>
+      </html>
+    `;
+    const result = parseHtml(html);
+
+    expect(result.resolution).toBe("square-4k");
   });
 
   it("extracts x, y, scale, opacity from data attributes", () => {

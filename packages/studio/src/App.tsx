@@ -11,7 +11,7 @@ import { useMountEffect } from "./hooks/useMountEffect";
 import { NLELayout } from "./components/nle/NLELayout";
 import { SourceEditor } from "./components/editor/SourceEditor";
 import { LeftSidebar } from "./components/sidebar/LeftSidebar";
-import { RenderQueue } from "./components/renders/RenderQueue";
+import { RenderQueue, type CompositionDimensions } from "./components/renders/RenderQueue";
 import { useRenderQueue } from "./components/renders/useRenderQueue";
 import { CompositionThumbnail, VideoThumbnail, liveTime, usePlayerStore } from "./player";
 import { AudioWaveform } from "./player/components/AudioWaveform";
@@ -276,6 +276,28 @@ export function StudioApp() {
       setRightCollapsed(!captionHasSelection);
     }
   }, [captionHasSelection, captionEditMode]);
+
+  // Track the active composition's authored dimensions so the render
+  // dropdown can derive landscape vs portrait. The runtime emits
+  // `stage-size` after `applyCompositionSizing` resolves the authoritative
+  // dims, so we use that instead of re-parsing the iframe DOM.
+  const [compositionDimensions, setCompositionDimensions] = useState<CompositionDimensions | null>(
+    null,
+  );
+  useMountEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      const data = e.data;
+      if (data?.source !== "hf-preview" || data?.type !== "stage-size") return;
+      const { width, height } = data as { width: number; height: number };
+      if (!(width > 0) || !(height > 0)) return;
+      setCompositionDimensions((prev) =>
+        prev && prev.width === width && prev.height === height ? prev : { width, height },
+      );
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  });
+
   const [globalDragOver, setGlobalDragOver] = useState(false);
   const [appToast, setAppToast] = useState<AppToast | null>(null);
   const [timelineVisible, setTimelineVisible] = useState(true);
@@ -1687,6 +1709,7 @@ export function StudioApp() {
                   onStartRender={(format, quality, resolution) =>
                     renderQueue.startRender({ format, quality, resolution })
                   }
+                  compositionDimensions={compositionDimensions}
                   isRendering={renderQueue.isRendering}
                 />
               )}
