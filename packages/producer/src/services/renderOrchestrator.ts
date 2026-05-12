@@ -27,20 +27,16 @@ import {
   copyFileSync,
   appendFileSync,
   symlinkSync,
+  cpSync,
 } from "fs";
 import { parseHTML } from "linkedom";
 import { type CanvasResolution, type Fps, fpsToNumber, fpsToFfmpegArg } from "@hyperframes/core";
 import {
   type EngineConfig,
   resolveConfig,
-  extractAllVideoFrames,
-  resolveProjectRelativeSrc,
   type ExtractedFrames,
   type ExtractionPhaseBreakdown,
-  createFrameLookupTable,
-  FrameLookupTable,
   type HdrTransfer,
-  detectTransfer,
   createCaptureSession,
   initializeSession,
   closeCaptureSession,
@@ -68,10 +64,7 @@ import {
   createFrameReorderBuffer,
   type StreamingEncoder,
   analyzeCompositionHdr,
-  isHdrColorSpace,
   runFfmpeg,
-  extractMediaMetadata,
-  type VideoColorSpace,
   initTransparentBackground,
   captureAlphaPng,
   applyDomLayerMask,
@@ -107,6 +100,7 @@ import {
 } from "./hdrImageTransferCache.js";
 import { runCompileStage } from "./render/stages/compileStage.js";
 import { runProbeStage } from "./render/stages/probeStage.js";
+import { runExtractVideosStage } from "./render/stages/extractVideosStage.js";
 
 /**
  * Wrap a cleanup operation so it never throws, but logs any failure.
@@ -633,11 +627,20 @@ type MaterializeFileSystem = {
   existsSync: (path: string) => boolean;
   mkdirSync: (path: string, options: { recursive: true }) => unknown;
   symlinkSync: (target: string, path: string) => unknown;
+  cpSync: (src: string, dest: string, options: { recursive: true }) => unknown;
 };
 
 type MaterializeExtractedFramesOptions = {
   pathModule?: MaterializePathModule;
   fileSystem?: MaterializeFileSystem;
+  /**
+   * When `true`, recursively copy frames into `compiledDir` as real files
+   * instead of creating a single symlink per video. Required for
+   * distributed plan() output where the planDir must be self-contained
+   * across machines (symlinks don't survive S3 / GCS round-trips).
+   * Default `false` preserves the in-process renderer's symlink behavior.
+   */
+  materializeSymlinks?: boolean;
 };
 
 const materializePathModule: MaterializePathModule = {
@@ -653,6 +656,7 @@ const materializeFileSystem: MaterializeFileSystem = {
   existsSync,
   mkdirSync,
   symlinkSync,
+  cpSync,
 };
 
 export function materializeExtractedFramesForCompiledDir(
@@ -672,7 +676,11 @@ export function materializeExtractedFramesForCompiledDir(
     const linkPath = pathModule.join(compiledFrameRoot, ext.videoId);
     if (!fileSystem.existsSync(linkPath)) {
       fileSystem.mkdirSync(pathModule.dirname(linkPath), { recursive: true });
-      fileSystem.symlinkSync(resolvedOut, linkPath);
+      if (options.materializeSymlinks) {
+        fileSystem.cpSync(resolvedOut, linkPath, { recursive: true });
+      } else {
+        fileSystem.symlinkSync(resolvedOut, linkPath);
+      }
     }
 
     const remapped = new Map<number, string>();
@@ -1977,127 +1985,31 @@ export async function executeRenderJob(
     perfStages.compileMs = Date.now() - stage1Start;
 
     // ── Stage 2: Video frame extraction ─────────────────────────────────
-    const stage2Start = Date.now();
     updateJobStatus(job, "preprocessing", "Extracting video frames", 10, onProgress);
 
-    let frameLookup: FrameLookupTable | null = null;
     const compiledDir = join(workDir, "compiled");
-    let extractionResult: Awaited<ReturnType<typeof extractAllVideoFrames>> | null = null;
-    let videoReadinessSkipIds: string[] = [];
-    let videoMetadataHints: CaptureVideoMetadataHint[] = [];
-
-    // Probe ORIGINAL color spaces before extraction (which may convert SDR→HDR).
-    // This is needed to identify which videos are natively HDR vs converted-SDR
-    // for the two-pass compositing path. Skipped only in force-sdr mode to
-    // avoid ffprobe overhead when the user has explicitly opted out.
-    const nativeHdrVideoIds = new Set<string>();
-    const videoTransfers = new Map<string, HdrTransfer>();
-    if (job.config.hdrMode !== "force-sdr" && composition.videos.length > 0) {
-      await Promise.all(
-        composition.videos.map(async (v) => {
-          // Use the shared resolver so a `<video src="../assets/foo">` in a
-          // sub-composition resolves the same way the browser would (see
-          // resolveProjectRelativeSrc in videoFrameExtractor for the full
-          // explanation). isAbsolute (not `startsWith("/")`) so Windows
-          // absolute paths like `C:\...` skip the join correctly.
-          const videoPath = isAbsolute(v.src)
-            ? v.src
-            : resolveProjectRelativeSrc(v.src, projectDir, compiledDir);
-          if (!existsSync(videoPath)) return;
-          const meta = await extractMediaMetadata(videoPath);
-          if (isHdrColorSpace(meta.colorSpace)) {
-            nativeHdrVideoIds.add(v.id);
-            videoTransfers.set(v.id, detectTransfer(meta.colorSpace));
-          }
-        }),
-      );
-    }
-
-    // Probe images for HDR color spaces (16-bit PNGs tagged BT.2020 PQ/HLG).
-    // Mirrors the video probe loop above so image-only compositions can
-    // trigger HDR output without any video sources present. Skipped only in
-    // force-sdr mode to avoid ffprobe overhead when the user has explicitly
-    // opted out.
-    const nativeHdrImageIds = new Set<string>();
-    const imageTransfers = new Map<string, HdrTransfer>();
-    const hdrImageSrcPaths = new Map<string, string>();
-    const imageColorSpaces: (VideoColorSpace | null)[] = [];
-    if (job.config.hdrMode !== "force-sdr" && composition.images.length > 0) {
-      const probed = await Promise.all(
-        composition.images.map(async (img) => {
-          let imgPath = img.src;
-          if (!imgPath.startsWith("/")) {
-            const fromCompiled = existsSync(join(compiledDir, imgPath))
-              ? join(compiledDir, imgPath)
-              : join(projectDir, imgPath);
-            imgPath = fromCompiled;
-          }
-          if (!existsSync(imgPath)) return null;
-          const meta = await extractMediaMetadata(imgPath);
-          if (isHdrColorSpace(meta.colorSpace)) {
-            nativeHdrImageIds.add(img.id);
-            imageTransfers.set(img.id, detectTransfer(meta.colorSpace));
-            hdrImageSrcPaths.set(img.id, imgPath);
-          }
-          return meta.colorSpace;
-        }),
-      );
-      imageColorSpaces.push(...probed);
-    }
-
-    if (composition.videos.length > 0) {
-      extractionResult = await extractAllVideoFrames(
-        composition.videos,
-        projectDir,
-        // extractAllVideoFrames takes fps as a number (decimal). Frames sampled
-        // from a video at 29.97 vs 30 differ by ~1 frame in 1000 — not enough
-        // to break visual parity, and the encoder-side rational keeps the
-        // output framerate exact.
-        {
-          fps: fpsToNumber(job.config.fps),
-          outputDir: join(compiledDir, "__hyperframes_video_frames"),
-        },
-        abortSignal,
-        { extractCacheDir: cfg.extractCacheDir },
-        compiledDir,
-      );
-      assertNotAborted();
-
-      materializeExtractedFramesForCompiledDir(extractionResult.extracted, compiledDir);
-
-      if (extractionResult.extracted.length > 0) {
-        frameLookup = createFrameLookupTable(composition.videos, extractionResult.extracted);
-      }
-      videoReadinessSkipIds = collectVideoReadinessSkipIds(
-        nativeHdrVideoIds,
-        extractionResult.extracted,
-      );
-      videoMetadataHints = collectVideoMetadataHints(extractionResult.extracted);
-      perfStages.videoExtractMs = Date.now() - stage2Start;
-
-      // Auto-detect audio from video files via ffprobe metadata
-      const existingAudioSrcs = new Set(composition.audios.map((a) => a.src));
-      for (const ext of extractionResult.extracted) {
-        if (ext.metadata.hasAudio) {
-          const video = composition.videos.find((v) => v.id === ext.videoId);
-          if (video && !existingAudioSrcs.has(video.src)) {
-            composition.audios.push({
-              id: `${video.id}-audio`,
-              src: video.src,
-              start: video.start,
-              end: video.end,
-              mediaStart: video.mediaStart,
-              layer: 0,
-              volume: 1.0,
-              type: "video",
-            });
-            existingAudioSrcs.add(video.src);
-          }
-        }
-      }
-    } else {
-      perfStages.videoExtractMs = Date.now() - stage2Start;
-    }
+    const extractResult = await runExtractVideosStage({
+      projectDir,
+      compiledDir,
+      job,
+      cfg,
+      composition,
+      abortSignal,
+      assertNotAborted,
+    });
+    const {
+      extractionResult,
+      frameLookup,
+      videoReadinessSkipIds,
+      videoMetadataHints,
+      nativeHdrVideoIds,
+      videoTransfers,
+      nativeHdrImageIds,
+      imageTransfers,
+      hdrImageSrcPaths,
+      imageColorSpaces,
+    } = extractResult;
+    perfStages.videoExtractMs = extractResult.videoExtractMs;
 
     // ── HDR auto-detection ──────────────────────────────────────────────
     // Analyze probed video AND image color spaces. In auto mode, any HDR
