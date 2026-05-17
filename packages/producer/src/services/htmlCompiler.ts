@@ -689,6 +689,7 @@ function inlineSubCompositions(
       host.innerHTML = contentDoc.toString();
     }
 
+    host.setAttribute("data-composition-file", srcPath);
     host.removeAttribute("data-composition-src");
 
     // Set explicit pixel dimensions on the host element so children using

@@ -1335,7 +1335,9 @@ export function initSandboxRuntimeModular(): void {
           }
         }
 
-        const usesExternalCompositionSlot = rawNode.hasAttribute("data-composition-src");
+        const usesExternalCompositionSlot =
+          rawNode.hasAttribute("data-composition-src") ||
+          rawNode.hasAttribute("data-composition-file");
 
         // Generic child compositions retain legacy behavior and respect both
         // the authored parent clip window and the live child timeline duration.

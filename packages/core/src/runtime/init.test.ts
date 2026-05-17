@@ -211,6 +211,43 @@ describe("initSandboxRuntimeModular", () => {
     expect(child.style.visibility).toBe("visible");
   });
 
+  it("keeps compiled external composition hosts visible through their authored duration", async () => {
+    const root = document.createElement("div");
+    root.setAttribute("data-composition-id", "main");
+    root.setAttribute("data-root", "true");
+    root.setAttribute("data-start", "0");
+    root.setAttribute("data-width", "1920");
+    root.setAttribute("data-height", "1080");
+    document.body.appendChild(root);
+
+    const child = document.createElement("div");
+    child.setAttribute("data-composition-id", "sub");
+    child.setAttribute("data-composition-file", "compositions/sub.html");
+    child.setAttribute("data-start", "0");
+    child.setAttribute("data-duration", "3");
+    child.innerHTML = '<div id="hold-marker">HOLD ME</div>';
+    root.appendChild(child);
+
+    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+      main: createMockTimeline(3),
+      sub: createMockTimeline(1),
+    };
+
+    initSandboxRuntimeModular();
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+
+    const player = (
+      window as Window & {
+        __player?: { renderSeek: (timeSeconds: number) => void };
+      }
+    ).__player;
+    expect(player).toBeDefined();
+
+    player?.renderSeek(2);
+
+    expect(child.style.visibility).toBe("visible");
+  });
+
   it("pads the root timeline to the authored composition schedule before seeking visibility", () => {
     const root = document.createElement("div");
     root.setAttribute("data-composition-id", "main");
