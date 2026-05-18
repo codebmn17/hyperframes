@@ -16,6 +16,7 @@ import {
   RESPONSIVE_GRID,
 } from "./propertyPanelHelpers";
 import { MetricField, Section } from "./propertyPanelPrimitives";
+import { isMediaElement, MediaSection } from "./propertyPanelMediaSection";
 import { TextSection, StyleSections } from "./propertyPanelSections";
 
 // Re-export helpers that external consumers import from this module
@@ -40,6 +41,7 @@ interface PropertyPanelProps {
   onClearSelection: () => void;
   onSetStyle: (prop: string, value: string) => void | Promise<void>;
   onSetAttribute: (attr: string, value: string) => void | Promise<void>;
+  onSetHtmlAttribute: (attr: string, value: string | null) => void | Promise<void>;
   onSetManualOffset: (element: DomEditSelection, next: { x: number; y: number }) => void;
   onSetManualSize: (element: DomEditSelection, next: { width: number; height: number }) => void;
   onSetManualRotation: (element: DomEditSelection, next: { angle: number }) => void;
@@ -189,6 +191,7 @@ export const PropertyPanel = memo(function PropertyPanel({
   onClearSelection,
   onSetStyle,
   onSetAttribute,
+  onSetHtmlAttribute,
   onSetManualOffset,
   onSetManualSize,
   onSetManualRotation,
@@ -387,6 +390,16 @@ export const PropertyPanel = memo(function PropertyPanel({
 
         {element.dataAttributes.start != null && (
           <TimingSection element={element} onSetAttribute={onSetAttribute} />
+        )}
+
+        {isMediaElement(element) && (
+          <MediaSection
+            element={element}
+            styles={styles}
+            onSetStyle={onSetStyle}
+            onSetAttribute={onSetAttribute}
+            onSetHtmlAttribute={onSetHtmlAttribute}
+          />
         )}
 
         {showEditableSections && (

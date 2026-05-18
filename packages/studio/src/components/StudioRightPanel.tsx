@@ -56,6 +56,7 @@ export function StudioRightPanel({
     clearDomSelection,
     handleDomStyleCommit,
     handleDomAttributeCommit,
+    handleDomHtmlAttributeCommit,
     handleDomPathOffsetCommit,
     handleDomBoxSizeCommit,
     handleDomRotationCommit,
@@ -170,6 +171,7 @@ export function StudioRightPanel({
                   onClearSelection={clearDomSelection}
                   onSetStyle={handleDomStyleCommit}
                   onSetAttribute={handleDomAttributeCommit}
+                  onSetHtmlAttribute={handleDomHtmlAttributeCommit}
                   onSetManualOffset={handleDomPathOffsetCommit}
                   onSetManualSize={handleDomBoxSizeCommit}
                   onSetManualRotation={handleDomRotationCommit}
