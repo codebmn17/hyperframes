@@ -7,19 +7,33 @@ import "./styles/studio.css";
 
 trackStudioEvent("session_start");
 
+function errorProps(value: unknown): {
+  error_message: string;
+  error_name: string | null;
+  stack_trace: string | null;
+} {
+  if (value instanceof Error) {
+    return {
+      error_message: value.message,
+      error_name: value.name,
+      stack_trace: value.stack?.slice(0, 4000) ?? null,
+    };
+  }
+  return { error_message: String(value), error_name: null, stack_trace: null };
+}
+
 window.addEventListener("error", (event) => {
   trackStudioEvent("unhandled_error", {
+    ...errorProps(event.error),
     error_message: event.message,
-    filename: event.filename ?? null,
-    lineno: event.lineno ?? null,
-    colno: event.colno ?? null,
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno,
   });
 });
 
 window.addEventListener("unhandledrejection", (event) => {
-  trackStudioEvent("unhandled_promise_rejection", {
-    error_message: event.reason instanceof Error ? event.reason.message : String(event.reason),
-  });
+  trackStudioEvent("unhandled_promise_rejection", errorProps(event.reason));
 });
 
 createRoot(document.getElementById("root")!).render(

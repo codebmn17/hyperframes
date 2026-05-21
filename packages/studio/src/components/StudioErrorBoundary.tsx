@@ -21,7 +21,8 @@ export class StudioErrorBoundary extends Component<Props, State> {
     trackStudioEvent("crash", {
       error_message: error.message,
       error_name: error.name,
-      component_stack: info.componentStack?.slice(0, 500) ?? null,
+      stack_trace: error.stack?.slice(0, 4000) ?? null,
+      component_stack: info.componentStack?.slice(0, 2000) ?? null,
     });
   }
 
