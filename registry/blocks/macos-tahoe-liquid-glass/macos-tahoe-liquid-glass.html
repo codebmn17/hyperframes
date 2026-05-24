@@ -30,53 +30,75 @@
         width: 1440px;
         height: 900px;
         overflow: hidden;
-        background:
-          radial-gradient(circle at 18% 20%, rgba(109, 40, 217, 0.56), transparent 24%),
-          radial-gradient(circle at 78% 34%, rgba(14, 165, 233, 0.5), transparent 26%),
-          radial-gradient(circle at 70% 86%, rgba(245, 158, 11, 0.46), transparent 28%),
-          linear-gradient(145deg, #150527 0%, #07243f 38%, #0e7490 62%, #be185d 100%);
+        isolation: isolate;
+        background-image:
+          linear-gradient(
+            180deg,
+            rgba(7, 18, 34, 0.08),
+            rgba(7, 18, 34, 0.02) 44%,
+            rgba(7, 18, 34, 0.22)
+          ),
+          url("assets/wallpapers/golden-gate-bridge-san-francisco-5k-0g.jpg");
+        background-size: cover;
+        background-position: center center;
         color: #fff;
       }
+      .tahoe-desktop::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background:
+          radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.2), transparent 28%),
+          linear-gradient(90deg, rgba(0, 0, 0, 0.1), transparent 32%, rgba(255, 255, 255, 0.08));
+      }
       .tahoe-menu-bar {
+        position: relative;
+        z-index: 6;
         display: flex;
         align-items: center;
-        gap: 20px;
-        height: 32px;
-        padding: 6px 20px;
-        background: rgba(255, 255, 255, 0.18);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
-        font-size: 13px;
-        font-weight: 500;
-        backdrop-filter: blur(22px);
+        gap: 14px;
+        height: 28px;
+        padding: 5px 14px;
+        background: rgba(20, 47, 83, 0.28);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38);
+        font-size: 10px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(30px) saturate(1.45);
       }
       .tahoe-stage {
-        display: flex;
-        align-items: flex-start;
-        gap: 26px;
-        height: 650px;
+        position: relative;
+        z-index: 5;
+        height: 690px;
       }
       .tahoe-window {
-        position: relative;
-        width: 1080px;
-        height: 520px;
-        margin: 38px 0 0 76px;
+        position: absolute;
+        left: 106px;
+        top: 226px;
+        width: 610px;
+        height: 360px;
+        z-index: 5;
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        border-radius: 16px;
-        background: rgba(21, 25, 36, 0.68);
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 18px;
+        background: rgba(246, 252, 255, 0.7);
+        color: rgba(18, 40, 66, 0.92);
+        backdrop-filter: blur(26px) saturate(1.3);
         box-shadow:
-          0 24px 70px rgba(0, 0, 0, 0.42),
-          inset 0 1px 0 rgba(255, 255, 255, 0.18);
+          0 22px 58px rgba(6, 38, 82, 0.22),
+          inset 0 1px 0 rgba(255, 255, 255, 0.62);
       }
       .tahoe-window-titlebar {
         display: flex;
         align-items: center;
         gap: 8px;
-        height: 42px;
-        padding: 10px 14px;
-        background: rgba(255, 255, 255, 0.14);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        height: 38px;
+        padding: 9px 14px;
+        background: rgba(255, 255, 255, 0.34);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.28);
       }
       .tahoe-traffic-light {
         display: inline-block;
@@ -87,31 +109,31 @@
       .tahoe-finder-body {
         position: relative;
         display: flex;
-        height: 478px;
+        height: 322px;
       }
       .tahoe-sidebar {
-        width: 210px;
-        padding: 14px;
-        border-right: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(255, 255, 255, 0.08);
-        font-size: 12px;
+        width: 158px;
+        padding: 12px;
+        border-right: 1px solid rgba(255, 255, 255, 0.26);
+        background: rgba(255, 255, 255, 0.2);
+        font-size: 10px;
       }
       .tahoe-sidebar-row {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 7px 10px;
+        padding: 6px 8px;
         border-radius: 8px;
-        color: rgba(255, 255, 255, 0.68);
+        color: rgba(10, 35, 64, 0.78);
       }
       .tahoe-sidebar-row.active {
-        background: rgba(0, 122, 255, 0.28);
-        color: #cdeeff;
+        background: rgba(52, 147, 236, 0.26);
+        color: rgba(4, 50, 110, 0.98);
         font-weight: 700;
       }
       .tahoe-sidebar-icon {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
         object-fit: cover;
         border-radius: 5px;
         flex: 0 0 auto;
@@ -120,12 +142,12 @@
         flex: 1;
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 14px 12px;
+        gap: 10px 8px;
         align-content: start;
-        padding: 18px 20px;
+        padding: 18px 18px;
       }
       .tahoe-file {
-        padding: 10px;
+        padding: 8px;
         text-align: center;
       }
       .tahoe-folder-icon,
@@ -135,7 +157,7 @@
         height: 42px;
         margin: 0 auto 8px;
         border-radius: 10px;
-        background: linear-gradient(180deg, #77caff 0%, #1d8dff 100%);
+        background: linear-gradient(180deg, #9fe1ff 0%, #258dff 100%);
         box-shadow:
           inset 0 1px 0 rgba(255, 255, 255, 0.5),
           0 10px 20px rgba(0, 0, 0, 0.24);
@@ -170,13 +192,63 @@
           0 18px 0 #b2bcc8;
       }
       .tahoe-file-label {
-        color: rgba(255, 255, 255, 0.86);
-        font-size: 11px;
+        color: rgba(7, 31, 58, 0.94);
+        font-size: 10px;
+        font-weight: 700;
         line-height: 1.15;
-        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.55);
+        text-shadow: 0 1px 4px rgba(255, 255, 255, 0.6);
       }
-      .tahoe-glass-stack {
-        display: none;
+      .tahoe-widgets {
+        position: absolute;
+        left: 28px;
+        top: 44px;
+        z-index: 5;
+        display: grid;
+        grid-template-columns: 92px 92px;
+        gap: 8px;
+      }
+      .tahoe-widget {
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        border-radius: 18px;
+        background: rgba(247, 253, 255, 0.72);
+        color: rgba(14, 45, 76, 0.9);
+        backdrop-filter: blur(26px) saturate(1.45);
+        box-shadow:
+          0 18px 34px rgba(13, 61, 115, 0.2),
+          inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      }
+      .tahoe-calendar-widget {
+        width: 92px;
+        height: 110px;
+        padding: 9px;
+      }
+      .tahoe-weather-widget {
+        width: 92px;
+        height: 110px;
+        padding: 9px;
+        background: linear-gradient(160deg, rgba(30, 119, 238, 0.72), rgba(255, 255, 255, 0.44));
+        color: #fff;
+      }
+      .tahoe-media-widget {
+        grid-column: 1 / span 2;
+        width: 192px;
+        height: 96px;
+        background:
+          linear-gradient(140deg, rgba(13, 16, 22, 0.12), rgba(255, 255, 255, 0.24)),
+          radial-gradient(circle at 18% 20%, #ffb88b, transparent 32%),
+          radial-gradient(circle at 76% 28%, #ed2f7a, transparent 34%),
+          linear-gradient(135deg, #451a03, #0f172a);
+      }
+      .tahoe-calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+        margin-top: 7px;
+        font-size: 5.5px;
+        font-weight: 800;
+        text-align: center;
+        color: rgba(20, 51, 83, 0.66);
       }
       .tahoe-glass-panel {
         border: 1px solid rgba(255, 255, 255, 0.22);
@@ -189,12 +261,49 @@
           0 20px 54px rgba(0, 0, 0, 0.34);
       }
       .tahoe-notification {
+        position: absolute;
+        z-index: 7;
+        top: 58px;
+        right: 36px;
+        width: 374px;
         display: flex;
         gap: 12px;
-        min-height: 92px;
-        padding: 14px;
+        min-height: 86px;
+        padding: 14px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        border-radius: 28px;
+        background:
+          linear-gradient(
+            140deg,
+            rgba(255, 255, 255, 0.62),
+            rgba(255, 255, 255, 0.26) 48%,
+            rgba(255, 255, 255, 0.42)
+          ),
+          rgba(233, 249, 255, 0.56);
+        color: #fff;
+        backdrop-filter: blur(30px) saturate(1.55);
+        box-shadow:
+          0 22px 46px rgba(4, 55, 112, 0.25),
+          inset 0 1px 0 rgba(255, 255, 255, 0.72),
+          inset 0 -18px 38px rgba(255, 255, 255, 0.1);
+      }
+      .tahoe-notification::before {
+        content: "";
+        position: absolute;
+        inset: 1px;
+        border-radius: inherit;
+        pointer-events: none;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0.58),
+          transparent 34%,
+          rgba(255, 255, 255, 0.22)
+        );
+        mix-blend-mode: screen;
+        opacity: 0.5;
       }
       .tahoe-notification img {
+        position: relative;
         width: 40px;
         height: 40px;
         border-radius: 10px;
@@ -202,15 +311,21 @@
         flex: 0 0 auto;
       }
       .tahoe-panel-title {
-        color: rgba(255, 255, 255, 0.96);
-        font-size: 15px;
+        position: relative;
+        color: rgba(8, 30, 58, 0.98);
+        font-size: 17px;
         font-weight: 800;
+        line-height: 1.1;
+        text-shadow: 0 1px 6px rgba(255, 255, 255, 0.56);
       }
       .tahoe-panel-subtitle {
+        position: relative;
         margin-top: 4px;
-        color: rgba(255, 255, 255, 0.82);
-        font-size: 12px;
+        color: rgba(9, 36, 66, 0.86);
+        font-size: 12.5px;
+        font-weight: 700;
         line-height: 1.35;
+        text-shadow: 0 1px 6px rgba(255, 255, 255, 0.48);
       }
       .tahoe-control-center {
         padding: 14px;
@@ -266,23 +381,28 @@
         box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
       }
       .tahoe-dock {
-        width: 612px;
-        margin: 22px auto 0;
+        position: absolute;
+        z-index: 6;
+        left: 50%;
+        bottom: 24px;
+        width: auto;
         display: flex;
         align-items: flex-end;
-        gap: 10px;
-        padding: 10px 14px;
-        border: 1px solid rgba(255, 255, 255, 0.24);
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.17);
+        gap: 7px;
+        padding: 8px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.52);
+        transform: translateX(-50%);
+        backdrop-filter: blur(28px) saturate(1.45);
         box-shadow:
-          0 18px 46px rgba(0, 0, 0, 0.3),
-          inset 0 1px 0 rgba(255, 255, 255, 0.28);
+          0 22px 44px rgba(6, 38, 82, 0.24),
+          inset 0 1px 0 rgba(255, 255, 255, 0.72);
       }
       .tahoe-dock-icon {
         display: block;
-        width: 54px;
-        height: 54px;
+        width: 46px;
+        height: 46px;
         object-fit: cover;
         border-radius: 13px;
         box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
@@ -303,6 +423,7 @@
       <canvas
         id="cap-phone"
         layoutsubtree
+        aria-hidden="true"
         width="390"
         height="844"
         style="
@@ -405,9 +526,16 @@
         </div>
       </canvas>
 
+      <img
+        src="assets/wallpapers/golden-gate-bridge-san-francisco-5k-0g.jpg"
+        alt=""
+        style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none"
+      />
+
       <canvas
         id="cap-laptop"
         layoutsubtree
+        aria-hidden="true"
         width="1440"
         height="900"
         style="
@@ -441,9 +569,50 @@
               <span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Window</span
               ><span>Help</span>
               <div style="flex: 1"></div>
-              <span style="font-size: 11px">92%</span>
-              <span style="font-size: 11px">Wi-Fi</span>
-              <span style="font-size: 11px; font-variant-numeric: tabular-nums">Fri 15:16</span>
+              <span style="font-size: 10px">CC</span>
+              <span style="font-size: 10px">Search</span>
+              <span style="font-size: 10px">92%</span>
+              <span style="font-size: 10px">Wi-Fi</span>
+              <span style="font-size: 10px; font-variant-numeric: tabular-nums"
+                >Tue Apr 1 9:41 AM</span
+              >
+            </div>
+            <div class="tahoe-widgets">
+              <div class="tahoe-widget tahoe-calendar-widget">
+                <div style="font-size: 6px; font-weight: 900; color: rgba(249, 66, 58, 0.84)">
+                  APRIL
+                </div>
+                <div class="tahoe-calendar-days">
+                  <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span
+                  ><span>F</span><span>S</span> <span></span><span></span
+                  ><span style="color: #fff; background: #f0423a; border-radius: 99px">1</span
+                  ><span>2</span><span>3</span><span>4</span><span>5</span> <span>6</span
+                  ><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span
+                  ><span>12</span> <span>13</span><span>14</span><span>15</span><span>16</span
+                  ><span>17</span><span>18</span><span>19</span> <span>20</span><span>21</span
+                  ><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span>
+                </div>
+              </div>
+              <div class="tahoe-widget tahoe-weather-widget">
+                <div style="font-size: 7px; font-weight: 900">San Francisco</div>
+                <div style="font-size: 28px; font-weight: 800; line-height: 1; margin-top: 4px">
+                  53&deg;
+                </div>
+                <div style="font-size: 7px; font-weight: 800; opacity: 0.9; margin-top: 12px">
+                  Partly Cloudy
+                </div>
+                <div style="font-size: 6px; font-weight: 800; opacity: 0.82">H:58° L:50°</div>
+              </div>
+              <div class="tahoe-widget tahoe-media-widget"></div>
+            </div>
+            <div id="mac-toast" class="tahoe-notification">
+              <img src="assets/icons/toast-messages.jpg" alt="" />
+              <div>
+                <div class="tahoe-panel-title">
+                  <span>Messages</span> <span style="font-size: 11px; opacity: 0.78">now</span>
+                </div>
+                <div class="tahoe-panel-subtitle">Liquid Glass preview is ready for review.</div>
+              </div>
             </div>
             <div class="tahoe-stage">
               <div class="tahoe-window">
@@ -457,7 +626,7 @@
                       text-align: center;
                       font-size: 13px;
                       font-weight: 600;
-                      color: rgba(255, 255, 255, 0.7);
+                      color: rgba(20, 46, 76, 0.72);
                     "
                     >HyperFrames</span
                   >
@@ -540,13 +709,6 @@
           </div>
         </div>
       </canvas>
-
-      <img
-        id="mac-toast-source"
-        src="assets/icons/toast-messages.jpg"
-        alt=""
-        style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none"
-      />
 
       <canvas
         id="theater"
@@ -796,7 +958,11 @@
       lapTex.minFilter = THREE.LinearFilter;
       lapTex.magFilter = THREE.LinearFilter;
       lapTex.generateMipmaps = false;
-      var macToastIcon = document.getElementById("mac-toast-source");
+      var macToastIcon = document.querySelector("#mac-toast img");
+      var macDockIcons = Array.prototype.slice.call(document.querySelectorAll(".tahoe-dock-icon"));
+      var macSidebarIcons = Array.prototype.slice.call(
+        document.querySelectorAll(".tahoe-sidebar-icon"),
+      );
 
       function roundedRect(ctx, x, y, w, h, r) {
         ctx.beginPath();
@@ -812,65 +978,167 @@
         ctx.closePath();
       }
 
+      function drawRoundedImage(ctx, image, x, y, w, h, r) {
+        if (!image || !image.complete) return;
+        ctx.save();
+        roundedRect(ctx, x, y, w, h, r);
+        ctx.clip();
+        ctx.drawImage(image, x, y, w, h);
+        ctx.restore();
+      }
+
       function drawGlassPanel(ctx, x, y, w, h, r) {
         var g = ctx.createLinearGradient(x, y, x + w, y + h);
-        g.addColorStop(0, "rgba(255,255,255,0.42)");
-        g.addColorStop(0.48, "rgba(255,255,255,0.18)");
-        g.addColorStop(1, "rgba(11,16,28,0.76)");
+        g.addColorStop(0, "rgba(255,255,255,0.82)");
+        g.addColorStop(0.46, "rgba(245,253,255,0.42)");
+        g.addColorStop(1, "rgba(211,237,255,0.3)");
         ctx.save();
-        ctx.shadowColor = "rgba(0,0,0,0.34)";
-        ctx.shadowBlur = 28;
-        ctx.shadowOffsetY = 18;
+        ctx.shadowColor = "rgba(7,47,96,0.2)";
+        ctx.shadowBlur = 24;
+        ctx.shadowOffsetY = 12;
         roundedRect(ctx, x, y, w, h, r);
         ctx.fillStyle = g;
         ctx.fill();
         ctx.shadowColor = "transparent";
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = "rgba(255,255,255,0.42)";
+        ctx.lineWidth = 1.25;
+        ctx.strokeStyle = "rgba(255,255,255,0.72)";
         ctx.stroke();
-        roundedRect(ctx, x + 1, y + 1, w - 2, h - 2, r - 1);
-        ctx.strokeStyle = "rgba(255,255,255,0.16)";
+        roundedRect(ctx, x + 2, y + 2, w - 4, h - 4, Math.max(0, r - 2));
+        ctx.strokeStyle = "rgba(255,255,255,0.24)";
         ctx.stroke();
         ctx.restore();
       }
 
+      function drawMenuBar(ctx) {
+        ctx.save();
+        var g = ctx.createLinearGradient(0, 0, 1440, 0);
+        g.addColorStop(0, "rgba(255,255,255,0.34)");
+        g.addColorStop(0.52, "rgba(255,255,255,0.18)");
+        g.addColorStop(1, "rgba(255,255,255,0.3)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, 1440, 28);
+        ctx.strokeStyle = "rgba(255,255,255,0.46)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, 28);
+        ctx.lineTo(1440, 28);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(255,255,255,0.96)";
+        ctx.font = "800 14px Inter, system-ui, sans-serif";
+        ctx.fillText("Finder", 50, 18);
+        ctx.font = "700 11px Inter, system-ui, sans-serif";
+        var items = ["File", "Edit", "View", "Go", "Window", "Help"];
+        for (var mi = 0; mi < items.length; mi++) ctx.fillText(items[mi], 108 + mi * 46, 18);
+        ctx.textAlign = "right";
+        ctx.fillText("92%   Wi-Fi   Tue Apr 1 9:41 AM", 1414, 18);
+        ctx.textAlign = "left";
+        ctx.restore();
+      }
+
+      function drawDesktopWidgets(ctx) {
+        ctx.save();
+        ctx.textBaseline = "top";
+        drawGlassPanel(ctx, 28, 48, 100, 112, 18);
+        ctx.fillStyle = "rgba(239,68,68,0.92)";
+        ctx.font = "900 8px Inter, system-ui, sans-serif";
+        ctx.fillText("APRIL", 44, 62);
+        ctx.fillStyle = "rgba(15,45,80,0.72)";
+        ctx.font = "800 7px Inter, system-ui, sans-serif";
+        var days = ["S", "M", "T", "W", "T", "F", "S"];
+        for (var di = 0; di < days.length; di++) ctx.fillText(days[di], 42 + di * 10, 82);
+        for (var da = 1; da <= 26; da++) {
+          var dx = 42 + ((da + 1) % 7) * 10;
+          var dy = 98 + Math.floor((da + 1) / 7) * 12;
+          if (da === 1) {
+            ctx.fillStyle = "#ef4444";
+            ctx.beginPath();
+            ctx.arc(dx + 3, dy + 4, 6, 0, PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#fff";
+          } else {
+            ctx.fillStyle = "rgba(15,45,80,0.62)";
+          }
+          ctx.fillText(String(da), dx, dy);
+        }
+
+        drawGlassPanel(ctx, 138, 48, 112, 112, 18);
+        var wg = ctx.createLinearGradient(138, 48, 250, 160);
+        wg.addColorStop(0, "rgba(43,133,245,0.72)");
+        wg.addColorStop(0.64, "rgba(163,220,255,0.54)");
+        wg.addColorStop(1, "rgba(255,255,255,0.3)");
+        roundedRect(ctx, 138, 48, 112, 112, 18);
+        ctx.fillStyle = wg;
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.96)";
+        ctx.font = "900 9px Inter, system-ui, sans-serif";
+        ctx.fillText("San Francisco", 154, 64);
+        ctx.font = "900 31px Inter, system-ui, sans-serif";
+        ctx.fillText("53°", 154, 84);
+        ctx.font = "800 8px Inter, system-ui, sans-serif";
+        ctx.fillText("Partly Cloudy", 154, 130);
+        ctx.fillText("H:58° L:50°", 154, 142);
+
+        drawGlassPanel(ctx, 28, 170, 222, 92, 22);
+        var pg = ctx.createLinearGradient(44, 188, 130, 244);
+        pg.addColorStop(0, "#ffb27a");
+        pg.addColorStop(0.52, "#ce2b6f");
+        pg.addColorStop(1, "#1d4ed8");
+        roundedRect(ctx, 44, 188, 72, 56, 14);
+        ctx.fillStyle = pg;
+        ctx.fill();
+        ctx.fillStyle = "rgba(18,40,68,0.92)";
+        ctx.font = "900 14px Inter, system-ui, sans-serif";
+        ctx.fillText("Now Playing", 130, 193);
+        ctx.font = "800 10px Inter, system-ui, sans-serif";
+        ctx.fillStyle = "rgba(18,40,68,0.68)";
+        ctx.fillText("Glass preview mix", 130, 216);
+        ctx.restore();
+      }
+
       function drawFinderWindow(ctx) {
-        drawGlassPanel(ctx, 96, 78, 704, 508, 18);
-        roundedRect(ctx, 96, 78, 704, 44, 18);
-        ctx.fillStyle = "rgba(255,255,255,0.22)";
+        var x = 112;
+        var y = 236;
+        var w = 620;
+        var h = 338;
+        drawGlassPanel(ctx, x, y, w, h, 18);
+        roundedRect(ctx, x, y, w, 42, 18);
+        ctx.fillStyle = "rgba(255,255,255,0.38)";
         ctx.fill();
         ctx.fillStyle = "#ff5f57";
         ctx.beginPath();
-        ctx.arc(122, 100, 7, 0, PI * 2);
+        ctx.arc(x + 26, y + 21, 6, 0, PI * 2);
         ctx.fill();
         ctx.fillStyle = "#febc2e";
         ctx.beginPath();
-        ctx.arc(144, 100, 7, 0, PI * 2);
+        ctx.arc(x + 46, y + 21, 6, 0, PI * 2);
         ctx.fill();
         ctx.fillStyle = "#28c840";
         ctx.beginPath();
-        ctx.arc(166, 100, 7, 0, PI * 2);
+        ctx.arc(x + 66, y + 21, 6, 0, PI * 2);
         ctx.fill();
-        ctx.fillStyle = "rgba(255,255,255,0.86)";
-        ctx.font = "800 14px Inter, system-ui, sans-serif";
-        ctx.fillText("HyperFrames", 408, 94);
+        ctx.fillStyle = "rgba(14,42,74,0.72)";
+        ctx.font = "800 13px Inter, system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("HyperFrames", x + w / 2, y + 25);
+        ctx.textAlign = "left";
 
-        ctx.fillStyle = "rgba(255,255,255,0.14)";
-        ctx.fillRect(96, 122, 188, 464);
+        ctx.fillStyle = "rgba(255,255,255,0.23)";
+        ctx.fillRect(x, y + 42, 164, h - 42);
         var sidebar = ["Favorites", "Home", "Desktop", "Downloads", "Pictures", "Music"];
         for (var si = 0; si < sidebar.length; si++) {
-          var sy = 148 + si * 34;
+          var sy = y + 70 + si * 34;
           if (si === 0) {
-            roundedRect(ctx, 112, sy - 7, 150, 24, 7);
-            ctx.fillStyle = "rgba(0,122,255,0.32)";
+            roundedRect(ctx, x + 16, sy - 17, 132, 26, 8);
+            ctx.fillStyle = "rgba(43,139,235,0.24)";
             ctx.fill();
           }
-          ctx.fillStyle = "rgba(255,255,255,0.82)";
+          drawRoundedImage(ctx, macSidebarIcons[si], x + 28, sy - 14, 18, 18, 5);
+          ctx.fillStyle = "rgba(18,45,76,0.78)";
           ctx.font =
             si === 0
-              ? "800 12px Inter, system-ui, sans-serif"
-              : "700 12px Inter, system-ui, sans-serif";
-          ctx.fillText(sidebar[si], 132, sy);
+              ? "900 12px Inter, system-ui, sans-serif"
+              : "800 12px Inter, system-ui, sans-serif";
+          ctx.fillText(sidebar[si], x + 54, sy);
         }
 
         var files = [
@@ -884,73 +1152,75 @@
           "scripts",
         ];
         for (var fi = 0; fi < files.length; fi++) {
-          var fx = 340 + (fi % 4) * 102;
-          var fy = 164 + Math.floor(fi / 4) * 132;
+          var fx = x + 226 + (fi % 4) * 94;
+          var fy = y + 94 + Math.floor(fi / 4) * 112;
           roundedRect(ctx, fx, fy, 54, 42, 10);
-          ctx.fillStyle = fi === 4 || fi === 5 ? "rgba(255,255,255,0.72)" : "rgba(83,180,255,0.78)";
+          ctx.fillStyle =
+            fi === 4 || fi === 5 ? "rgba(255,255,255,0.82)" : "rgba(112,202,255,0.74)";
           ctx.fill();
-          ctx.fillStyle = "rgba(255,255,255,0.88)";
-          ctx.font = "800 11px Inter, system-ui, sans-serif";
-          ctx.fillText(files[fi], fx - 18, fy + 58);
+          if (fi < 4 || fi > 5) {
+            roundedRect(ctx, fx + 4, fy - 8, 28, 13, 6);
+            ctx.fillStyle = "rgba(119,204,255,0.78)";
+            ctx.fill();
+          } else {
+            ctx.fillStyle = "rgba(104,122,142,0.46)";
+            ctx.fillRect(fx + 10, fy + 12, 34, 3);
+            ctx.fillRect(fx + 10, fy + 22, 26, 3);
+          }
+          ctx.fillStyle = "rgba(12,38,68,0.9)";
+          ctx.font = "900 11px Inter, system-ui, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(files[fi], fx + 27, fy + 62);
+          ctx.textAlign = "left";
+        }
+      }
+
+      function drawNotification(ctx) {
+        drawGlassPanel(ctx, 1002, 62, 390, 96, 28);
+        drawRoundedImage(ctx, macToastIcon, 1022, 84, 44, 44, 12);
+        ctx.fillStyle = "rgba(10,34,62,0.96)";
+        ctx.font = "900 18px Inter, system-ui, sans-serif";
+        ctx.fillText("Messages", 1082, 88);
+        ctx.font = "800 12px Inter, system-ui, sans-serif";
+        ctx.fillStyle = "rgba(10,34,62,0.58)";
+        ctx.fillText("now", 1178, 90);
+        ctx.font = "800 13px Inter, system-ui, sans-serif";
+        ctx.fillStyle = "rgba(10,34,62,0.78)";
+        ctx.fillText("Liquid Glass preview is ready for review.", 1082, 116);
+      }
+
+      function drawDock(ctx) {
+        var icons = macDockIcons;
+        var size = 46;
+        var gap = 8;
+        var padX = 14;
+        var padY = 9;
+        var w = icons.length * size + (icons.length - 1) * gap + padX * 2;
+        var x = Math.round((1440 - w) / 2);
+        var y = 792;
+        drawGlassPanel(ctx, x, y, w, size + padY * 2, 23);
+        for (var ii = 0; ii < icons.length; ii++) {
+          var ix = x + padX + ii * (size + gap);
+          drawRoundedImage(ctx, icons[ii], ix, y + padY, size, size, 13);
         }
       }
 
       function drawMacGlassOverlay(ctx) {
         ctx.save();
+        drawMenuBar(ctx);
+        drawDesktopWidgets(ctx);
         drawFinderWindow(ctx);
         ctx.textBaseline = "top";
-        ctx.fillStyle = "rgba(255,255,255,0.96)";
-        ctx.font = "800 18px Inter, system-ui, sans-serif";
-
-        drawGlassPanel(ctx, 820, 118, 330, 92, 26);
-        if (macToastIcon && macToastIcon.complete) {
+        var toastProgress = Math.max(0, Math.min(1, S.macToast * 1.15));
+        if (toastProgress > 0.01) {
           ctx.save();
-          roundedRect(ctx, 840, 140, 44, 44, 12);
-          ctx.clip();
-          ctx.drawImage(macToastIcon, 840, 140, 44, 44);
+          ctx.globalAlpha = toastProgress;
+          ctx.translate(0, (1 - toastProgress) * -34);
+          ctx.filter = "blur(" + (1 - toastProgress) * 4 + "px)";
+          drawNotification(ctx);
           ctx.restore();
         }
-        ctx.fillText("Messages", 900, 134);
-        ctx.font = "700 13px Inter, system-ui, sans-serif";
-        ctx.fillStyle = "rgba(255,255,255,0.78)";
-        ctx.fillText("Preview ready. Glass panels", 900, 160);
-        ctx.fillText("are inside the Mac display.", 900, 178);
-
-        drawGlassPanel(ctx, 820, 226, 330, 150, 28);
-        ctx.fillStyle = "rgba(255,255,255,0.96)";
-        ctx.font = "800 18px Inter, system-ui, sans-serif";
-        ctx.fillText("Control Center", 842, 246);
-        var labels = ["Wi-Fi", "Bluetooth", "Focus", "AirDrop"];
-        for (var ti = 0; ti < labels.length; ti++) {
-          var tx = 842 + (ti % 2) * 150;
-          var ty = 282 + Math.floor(ti / 2) * 42;
-          roundedRect(ctx, tx, ty, 132, 32, 14);
-          ctx.fillStyle = ti < 2 ? "rgba(61,172,255,0.72)" : "rgba(255,255,255,0.16)";
-          ctx.fill();
-          ctx.fillStyle = "rgba(255,255,255,0.9)";
-          ctx.font = "800 12px Inter, system-ui, sans-serif";
-          ctx.fillText(labels[ti], tx + 14, ty + 9);
-        }
-        roundedRect(ctx, 842, 358, 258, 8, 4);
-        ctx.fillStyle = "rgba(255,255,255,0.2)";
-        ctx.fill();
-        roundedRect(ctx, 842, 358, 186, 8, 4);
-        var slider = ctx.createLinearGradient(842, 358, 1028, 358);
-        slider.addColorStop(0, "#a7f3d0");
-        slider.addColorStop(0.55, "#38bdf8");
-        slider.addColorStop(1, "#c084fc");
-        ctx.fillStyle = slider;
-        ctx.fill();
-
-        drawGlassPanel(ctx, 820, 392, 330, 94, 26);
-        ctx.fillStyle = "rgba(255,255,255,0.96)";
-        ctx.font = "800 18px Inter, system-ui, sans-serif";
-        ctx.fillText("Now Playing", 842, 412);
-        ctx.font = "800 15px Inter, system-ui, sans-serif";
-        ctx.fillText("Liquid Shader", 842, 440);
-        ctx.font = "700 12px Inter, system-ui, sans-serif";
-        ctx.fillStyle = "rgba(255,255,255,0.78)";
-        ctx.fillText("HyperFrames preview mix", 842, 462);
+        drawDock(ctx);
         ctx.restore();
       }
 
@@ -1129,8 +1399,14 @@
         var macControl = document.getElementById("mac-control");
         var macMedia = document.getElementById("mac-media");
         if (macToast) {
-          macToast.style.opacity = 0.42 + S.macToast * 0.58;
-          macToast.style.transform = "translateY(" + (1 - S.macToast) * 14 + "px)";
+          macToast.style.opacity = Math.min(1, S.macToast * 1.15);
+          macToast.style.transform =
+            "translateY(" +
+            (1 - S.macToast) * -34 +
+            "px) scale(" +
+            (0.965 + S.macToast * 0.035) +
+            ")";
+          macToast.style.filter = "blur(" + (1 - S.macToast) * 4 + "px)";
         }
         if (macControl) {
           macControl.style.opacity = 0.5 + S.macPanel * 0.5;

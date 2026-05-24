@@ -23,6 +23,11 @@
       "type": "hyperframes:asset"
     },
     {
+      "path": "assets/wallpapers/golden-gate-bridge-san-francisco-5k-0g.jpg",
+      "target": "assets/wallpapers/golden-gate-bridge-san-francisco-5k-0g.jpg",
+      "type": "hyperframes:asset"
+    },
+    {
       "path": "assets/icons/finder.png",
       "target": "assets/icons/finder.png",
       "type": "hyperframes:asset"
