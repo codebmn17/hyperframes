@@ -13,7 +13,11 @@ import {
   rewriteCssAssetUrls,
   rewriteInlineStyleAssetUrls,
 } from "./rewriteSubCompPaths";
-import { scopeCssToComposition, wrapScopedCompositionScript } from "./compositionScoping";
+import {
+  scopeCssToComposition,
+  wrapInlineScriptWithErrorBoundary,
+  wrapScopedCompositionScript,
+} from "./compositionScoping";
 
 // ---------------------------------------------------------------------------
 // Public interface
@@ -287,7 +291,7 @@ export function inlineSubCompositions(
               runtimeCompId || scopeCompId,
               authoredRootId,
             )
-          : `(function(){ try { ${s.textContent || ""} } catch (_err) { console.error(${JSON.stringify(scriptErrorLabel)}, _err); } })();`;
+          : wrapInlineScriptWithErrorBoundary(s.textContent || "", scriptErrorLabel);
         scripts.push(wrappedScript);
         scriptItems.push({ kind: "inline", content: wrappedScript });
       }

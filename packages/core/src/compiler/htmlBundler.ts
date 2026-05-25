@@ -8,7 +8,11 @@ import {
   stripEmbeddedRuntimeScripts,
 } from "./htmlDocument";
 // rewriteSubCompPaths functions are used by inlineSubCompositions (shared module)
-import { scopeCssToComposition, wrapScopedCompositionScript } from "./compositionScoping";
+import {
+  scopeCssToComposition,
+  wrapInlineScriptWithErrorBoundary,
+  wrapScopedCompositionScript,
+} from "./compositionScoping";
 import { validateHyperframeHtmlContract } from "./staticGuard";
 import { getHyperframeRuntimeScript } from "../generated/runtime-inline";
 import { readDeclaredDefaults } from "../runtime/getVariables";
@@ -824,7 +828,10 @@ export async function bundleToSingleHtml(
                     runtimeCompId || compId,
                     authoredRootId,
                   )
-                : `(function(){ try { ${scriptEl.textContent || ""} } catch (_err) { console.error('[HyperFrames] composition script error:', _err); } })();`,
+                : wrapInlineScriptWithErrorBoundary(
+                    scriptEl.textContent || "",
+                    "[HyperFrames] composition script error:",
+                  ),
             );
           }
           scriptEl.remove();
@@ -875,7 +882,10 @@ export async function bundleToSingleHtml(
                     runtimeScope,
                     runtimeCompId || compId,
                   )
-                : `(function(){ try { ${scriptEl.textContent || ""} } catch (_err) { console.error('[HyperFrames] composition script error:', _err); } })();`,
+                : wrapInlineScriptWithErrorBoundary(
+                    scriptEl.textContent || "",
+                    "[HyperFrames] composition script error:",
+                  ),
             );
           }
           scriptEl.remove();
