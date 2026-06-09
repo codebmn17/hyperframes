@@ -428,6 +428,21 @@ class HyperframesPlayer extends HTMLElement {
     }
   }
 
+  /**
+   * Replay current bridge state to the iframe runtime. Triggered when the
+   * runtime announces `{type: "ready"}` — repairs the race where the parent
+   * posts control messages before the iframe's bridge listener is installed
+   * (warm-cache reloads, the Claude desktop Electron client, anywhere the
+   * iframe finishes loading after we've already called `set-muted` etc).
+   * Re-sending current state is idempotent — even at default values it just
+   * confirms what the runtime would have done anyway.
+   */
+  private _replayBridgeState(): void {
+    this._sendControl("set-muted", { muted: this.muted });
+    this._sendControl("set-volume", { volume: this._volume });
+    this._sendControl("set-playback-rate", { playbackRate: this.playbackRate });
+  }
+
   private _reloadShaderOptions(): void {
     if (getShaderModeFromElement(this) !== "player") this.shaderLoader.reset();
     if (this.hasAttribute("srcdoc")) {
@@ -529,6 +544,7 @@ class HyperframesPlayer extends HTMLElement {
       },
       sendControl: (action, extra) => this._sendControl(action, extra),
       getIframeDoc: () => this.iframe.contentDocument,
+      onRuntimeReady: () => this._replayBridgeState(),
       updateControlsTime: (t, d) => this.controlsApi?.updateTime(t, d),
       updateControlsPlaying: (p) => this.controlsApi?.updatePlaying(p),
       dispatchEvent: (ev) => this.dispatchEvent(ev),

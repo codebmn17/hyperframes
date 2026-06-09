@@ -1591,6 +1591,130 @@ describe("HyperframesPlayer audio lock", () => {
   });
 });
 
+describe("HyperframesPlayer runtime ready handshake", () => {
+  // When the iframe runtime announces `{type: "ready"}` the player replays
+  // current bridge state (muted, volume, playback rate) so any control message
+  // that arrived before the iframe runtime registered its listener isn't lost.
+  // This fixes a deterministic race on warm-cache reloads of claude.ai and
+  // inside the Claude desktop Electron client where the iframe finishes
+  // loading after the player has already set audio-locked.
+  interface PlayerInternal extends HTMLElement {
+    muted: boolean;
+    volume: number;
+    audioLocked: boolean;
+    playbackRate: number;
+    iframe: HTMLIFrameElement;
+    _onMessage: (event: MessageEvent) => void;
+  }
+
+  let player: PlayerInternal;
+  let frameWindow: Window;
+  let postSpy: ReturnType<typeof vi.spyOn>;
+
+  function readyMessage() {
+    return new MessageEvent("message", {
+      source: frameWindow,
+      data: { source: "hf-preview", type: "ready" },
+    });
+  }
+
+  function findControlCalls(action: string) {
+    return postSpy.mock.calls.filter((call) => {
+      const data = call[0] as { type?: string; action?: string };
+      return data?.type === "control" && data?.action === action;
+    });
+  }
+
+  beforeEach(async () => {
+    await import("./hyperframes-player.js");
+    player = document.createElement("hyperframes-player") as PlayerInternal;
+    frameWindow = window;
+    postSpy = vi.spyOn(frameWindow, "postMessage").mockImplementation(() => undefined);
+    Object.defineProperty(player.iframe, "contentWindow", {
+      configurable: true,
+      get: () => frameWindow,
+    });
+    document.body.appendChild(player);
+  });
+
+  afterEach(() => {
+    player.remove();
+    vi.restoreAllMocks();
+  });
+
+  it("replays current muted state when runtime emits ready", () => {
+    player.muted = true;
+    postSpy.mockClear();
+
+    player._onMessage(readyMessage());
+
+    const muteCalls = findControlCalls("set-muted");
+    expect(muteCalls).toHaveLength(1);
+    expect(muteCalls[0]?.[0]).toMatchObject({
+      source: "hf-parent",
+      type: "control",
+      action: "set-muted",
+      muted: true,
+    });
+  });
+
+  it("replays volume and playback-rate alongside muted", () => {
+    player.volume = 0.5;
+    player.playbackRate = 1.25;
+    postSpy.mockClear();
+
+    player._onMessage(readyMessage());
+
+    expect(findControlCalls("set-muted")).toHaveLength(1);
+    expect(findControlCalls("set-volume")[0]?.[0]).toMatchObject({
+      action: "set-volume",
+      volume: 0.5,
+    });
+    expect(findControlCalls("set-playback-rate")[0]?.[0]).toMatchObject({
+      action: "set-playback-rate",
+      playbackRate: 1.25,
+    });
+  });
+
+  it("replays the muted state forced by audio-locked", () => {
+    // The audio-locked attribute is the original motivating case for this
+    // handshake — its `muted = true` side effect must survive an iframe race.
+    player.setAttribute("audio-locked", "");
+    expect(player.muted).toBe(true);
+    postSpy.mockClear();
+
+    player._onMessage(readyMessage());
+
+    const muteCalls = findControlCalls("set-muted");
+    expect(muteCalls).toHaveLength(1);
+    expect(muteCalls[0]?.[0]).toMatchObject({ action: "set-muted", muted: true });
+  });
+
+  it("replays again on a second ready (idempotent — iframe reloads emit again)", () => {
+    player.muted = true;
+    postSpy.mockClear();
+
+    player._onMessage(readyMessage());
+    player._onMessage(readyMessage());
+
+    expect(findControlCalls("set-muted")).toHaveLength(2);
+  });
+
+  it("ignores ready events from a different window", () => {
+    postSpy.mockClear();
+    const otherSource = {} as Window;
+
+    player._onMessage(
+      new MessageEvent("message", {
+        source: otherSource,
+        data: { source: "hf-preview", type: "ready" },
+      }),
+    );
+
+    expect(findControlCalls("set-muted")).toHaveLength(0);
+  });
+});
+
 describe("HyperframesPlayer audio lock — Claude desktop UA fallback", () => {
   // Some host renderers (observed on the Claude desktop Electron client) strip
   // unknown custom-element attributes before they reach the DOM, so the
