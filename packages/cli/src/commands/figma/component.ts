@@ -28,6 +28,7 @@ function escapeAttr(value: string): string {
 }
 import { runAssetImport } from "./asset.js";
 import { downloadRender } from "./download.js";
+import { withFigmaErrors } from "./cliError.js";
 
 export interface ComponentImportDeps {
   projectDir: string;
@@ -72,7 +73,12 @@ export async function runComponentImport(
       { format: "svg" },
       { projectDir: deps.projectDir, client: deps.client, download: deps.download },
     );
-    const srcRel = relative(componentDir, join(deps.projectDir, asset.record.path));
+    // src is a URL — always forward slashes, even when relative() yields
+    // windows separators.
+    const srcRel = relative(componentDir, join(deps.projectDir, asset.record.path)).replaceAll(
+      "\\",
+      "/",
+    );
     const emittedId = escapeAttr(req.nodeId);
     html = html.replaceAll(
       `data-figma-rasterize="${emittedId}" `,
@@ -120,19 +126,21 @@ export default defineCommand({
     dir: { type: "string", description: "project directory", default: "." },
   },
   async run({ args }) {
-    const client = createFigmaClient({ token: process.env.FIGMA_TOKEN ?? "" });
-    const result = await runComponentImport(args.ref, {
-      projectDir: args.dir,
-      client,
-      download: downloadRender,
+    await withFigmaErrors(async () => {
+      const client = createFigmaClient({ token: process.env.FIGMA_TOKEN ?? "" });
+      const result = await runComponentImport(args.ref, {
+        projectDir: args.dir,
+        client,
+        download: downloadRender,
+      });
+      console.log(`imported component "${result.name}" → ${result.htmlPath}`);
+      if (result.rasterized.length > 0)
+        console.log(`rasterized ${result.rasterized.length} node(s) via asset export`);
+      if (result.unresolved.length > 0) {
+        console.log(
+          `${result.unresolved.length} binding(s) reference tokens not yet imported — colors baked as literals (flagged data-figma-unresolved). Run \`hyperframes figma tokens\` on the source/library file, then re-import to link them.`,
+        );
+      }
     });
-    console.log(`imported component "${result.name}" → ${result.htmlPath}`);
-    if (result.rasterized.length > 0)
-      console.log(`rasterized ${result.rasterized.length} node(s) via asset export`);
-    if (result.unresolved.length > 0) {
-      console.log(
-        `${result.unresolved.length} binding(s) reference tokens not yet imported — colors baked as literals (flagged data-figma-unresolved). Run \`hyperframes figma tokens\` on the source/library file, then re-import to link them.`,
-      );
-    }
   },
 });
