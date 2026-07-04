@@ -9,6 +9,20 @@ Recent HyperFrames releases, including user-facing features, fixes, and migratio
 {/* New release entries are prepended by `bun run changelog:draft <version> --write`. */}
 
 <Update
+  label="HyperFrames v0.7.31"
+  description="Released - 2026-07-04"
+  tags={["Release", "Core,cli"]}
+>
+This release makes Figma imports first-class citizens of the shared media inventory: every `hyperframes figma asset` import now regenerates `.media/index.md` (byte-identical with media-use's format), carries `--description`/`--entity` metadata into the manifest, index, and alt text, and the reuse path correctly upserts metadata and dedupes against any prior format/scale/version tuple. media-use's entity lookups now match figma-imported brand marks across the icon/image boundary.
+
+## Features
+
+- **Core,cli:** Media-use interop — shared index.md regen + description/entity on figma imports ([3900caaaa](https://github.com/heygen-com/hyperframes/commit/3900caaaa94443efb01597dac26df1533f8add35), [#1927](https://github.com/heygen-com/hyperframes/pull/1927))
+
+[View the full commit range](https://github.com/heygen-com/hyperframes/compare/v0.7.30...v0.7.31).
+</Update>
+
+<Update
   label="HyperFrames v0.7.30"
   description="Released - 2026-07-04"
   tags={["Release", "Studio", "Sdk"]}
